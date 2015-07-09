@@ -54,8 +54,12 @@ router.route('/slack')
                 savePref(restaurants, "Added " + restaurantName + " to the restaurant list!", res);
             } else if(command.indexOf("remove") === 0) {
                 var restaurantName = command.substring(command.indexOf("remove")+("remove").length);
+                restaurantName = restaurantName.trim();
                 if(restaurantName === "Chipotle") {
                     sendPost("Sorry Rana, Chipotle can never be removed.", res);
+                }
+                if(!restaurants.list[restaurantName]) {
+                    sendPost("You didn't have this restaurant on your list!", rest);
                 }
                 restaurants.list[restaurantName] = false;
                 restaurants.markModified('list');
