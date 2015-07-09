@@ -57,9 +57,11 @@ router.route('/slack')
                 restaurantName = restaurantName.trim();
                 if(restaurantName === "Chipotle") {
                     sendPost("Sorry Rana, Chipotle can never be removed.", res);
+                    return;
                 }
                 if(!restaurants.list[restaurantName]) {
                     sendPost("You didn't have this restaurant on your list!", rest);
+                    return;
                 }
                 restaurants.list[restaurantName] = false;
                 restaurants.markModified('list');
