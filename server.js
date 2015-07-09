@@ -8,7 +8,7 @@ var Restaurants = require('./app/models/preferences/restaurants');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 8081;
+var port = process.env.PORT || 777;
 
 var router = express.Router();
 router.route('/slack')
