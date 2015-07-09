@@ -6,6 +6,7 @@ mongoose.connect('mongodb://localhost:27017/lunchbob');
 var Restaurants = require('./app/models/preferences/restaurants');
 var querystring = require('querystring')
 var request = require('request')
+var Event = require('./app/models/events');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -15,19 +16,25 @@ var port = process.env.PORT || 8087;
 var router = express.Router();
 router.route('/slack')
     .post(function(req, res) {
-        console.log("REQ: ", req.body);
         var body = req.body;
         var teamId = body.team_id;
         var channelId = body.channel_id;
-        var slackId = "slack_"+teamId+"_"+channelId;
         var message = body.text;
         var trigger = body.trigger_word;
+        var username = body.user_name;
+        var timestamp = body.timestamp;
+
+        var slackId = "slack_"+teamId+"_"+channelId;
         var command = message.substring(message.indexOf(trigger)+trigger.length);
         command = command.trim();
+
+        logEvent(username, command);
+
         Restaurants.findById(slackId,function(err, restaurants) {
             if(err) {
                 console.log("ERROR!!!", err);
                 sendPost("Sorry! I could not process your command", res);
+                return;
             }
 
             //Retrieve restaurant list
@@ -80,8 +87,6 @@ router.route('/slack')
                     }
                 }
 
-                console.log("COMMAND ["+ command +"]");
-                console.log("index:", command.indexOf("list"));
                 if(command.indexOf("list") === 0) {
                     if(restList === "") {
                         restList = "You don't have any restaurants in your list!";
@@ -89,7 +94,6 @@ router.route('/slack')
                     sendPost(restList, res);
                 } else if(command.indexOf("decide") === 0) {
                     var decision = getRandomItem(arr);
-                    var username = body.user_name;
                     if(username === "rana.akhavan") {
                         sendPost("You should go to Chipotle, Rana.", res);
                         return;
@@ -103,7 +107,6 @@ router.route('/slack')
     });
 
 router.use(function(req, res, next) {
-    console.log("in the use flow");
     next();
 });
 
@@ -115,8 +118,7 @@ console.log("Lunchbob has arrived");
 
 function sendPost(text, res) {
     var payload = {
-        text: text,
-        username: "lunchbob"
+        text: text
     };
     var url = 'https://hooks.slack.com/services/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';
     request.post(url, {
@@ -142,7 +144,23 @@ function savePref(pref, message, res) {
         if(err) {
             console.log("ERROR! ", error);
             sendPost("Sorry! I could not process your command", res);
+            return;
         }
         sendPost(message, res);
+    });
+}
+
+function logEvent(username, command) {
+    var ev = new Event();
+    ev.username = username;
+    ev.time = new Date();
+    ev.command = command;
+    console.log("EV: ", ev);
+
+    ev.save(function(err) {
+        if(err) {
+            console.log("ERROR on saving event!", error);
+            return;
+        }
     });
 }
