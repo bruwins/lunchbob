@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var Schema = mongoose.Schema;
 
 var Restaurants = Preference.PreferenceSchema.extend({
-    restaurant: []
+    list: {}
 });
 
 module.exports = mongoose.model('Restaurants', Restaurants);
