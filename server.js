@@ -24,7 +24,6 @@ router.route('/slack')
         var trigger = body.trigger_word;
         var command = message.substring(message.indexOf(trigger)+trigger.length);
         command = command.trim();
-        console.log("COMMAND: ", command);
         Restaurants.findById(slackId,function(err, restaurants) {
             if(err) {
                 console.log("ERROR!!!", err);
@@ -39,7 +38,6 @@ router.route('/slack')
                 restaurants._id = slackId;
                 restaurants.name = "[" + domain +"-" + channelName + "] Restaurants";
             }
-            console.log("RESTAURANTS: ", restaurants);
             if(!restaurants.list) {
                 restaurants.list = {};
             }
@@ -52,12 +50,14 @@ router.route('/slack')
                     return;
                 }
                 restaurants.list[restaurantName] = true;
+                restaurants.markModified('list');
                 savePref(restaurants, "Added " + restaurantName + " to the restaurant list!", res);
             } else if(command.indexOf("remove") === 0) {
                 if(restaurantName === "Chipotle") {
                     sendPost("Sorry Rana, Chipotle can never be removed.", res);
                 }
                 restaurants.list[restaurantName] = false;
+                restaurants.markModified('list');
                 savePref(restaurants, "Removed " + restaurantName + " from the restaurant list!",res);
             } else if(command.indexOf("help") === 0) {
                 var helpCommands = "add | remove | list | decide";
@@ -116,7 +116,6 @@ function sendPost(text, res) {
             res.send(err);
             return;
         }
-        console.log("RESP: ", response);
         res.json({message: "Completed!"});
     });
 }
