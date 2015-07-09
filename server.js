@@ -53,6 +53,7 @@ router.route('/slack')
                 restaurants.markModified('list');
                 savePref(restaurants, "Added " + restaurantName + " to the restaurant list!", res);
             } else if(command.indexOf("remove") === 0) {
+                var restaurantName = command.substring(command.indexOf("remove")+("remove").length);
                 if(restaurantName === "Chipotle") {
                     sendPost("Sorry Rana, Chipotle can never be removed.", res);
                 }
@@ -82,6 +83,11 @@ router.route('/slack')
                     sendPost(restList, res);
                 } else if(command.indexOf("decide") === 0) {
                     var decision = getRandomItem(arr);
+                    var username = body.user_name;
+                    if(username === "rana.akhavan") {
+                        sendPost("You should go to Chipotle, Rana.", res);
+                        return;
+                    }
                     sendPost("You should go to " + decision + ". Did I do well?", res);
                 } else {
                     sendPost("Sorry I didn't recognize that command. Try using help to see what I can do.", res);
