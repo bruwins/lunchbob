@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8087;
+var url = 'https://hooks.slack.com/services/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';
 
 var router = express.Router();
 router.route('/slack')
@@ -81,7 +82,7 @@ router.route('/slack')
                 var arr = []
                 var restList = "";
                 for(var rest in currList) {
-                    if(currList.hasOwnProperty(rest)) {
+                    if(currList.hasOwnProperty(rest) && currList[rest]) {
                         restList += (rest + "\n");
                         arr.push(rest);
                     }
@@ -120,7 +121,6 @@ function sendPost(text, res) {
     var payload = {
         text: text
     };
-    var url = 'https://hooks.slack.com/services/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';
     request.post(url, {
         form: {
                   payload: JSON.stringify(payload)
