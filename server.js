@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8087;
-var url = process.env.URL || 'https://hooks.slack.com/services/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'; 
+var url = process.env.URL || 'https://hooks.slack.com/services/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'; 
 
 var router = express.Router();
 router.route('/slack')
