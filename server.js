@@ -32,6 +32,7 @@ router.route('/slack')
         var slackId = "slack_"+teamId+"_"+channelId;
         var command = message.substring(message.indexOf(trigger)+trigger.length);
         command = command.trim();
+        console.log("INCOMING FROM : " + slackId);
 
         logEvent(username, command);
 
