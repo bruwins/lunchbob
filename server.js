@@ -3,6 +3,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     mongoose = require('mongoose'),
     Restaurants = require('./app/models/preferences/restaurants'),
+    SlackServers = require('./app/models/SlackServers'),
     querystring = require('querystring'),
     request = require('request'),
     Event = require('./app/models/events');
@@ -20,7 +21,9 @@ router.route('/slack')
     .post(function(req, res) {
         var body = req.body;
         var teamId = body.team_id;
+        var teamName = body.team_domain;
         var channelId = body.channel_id;
+        var channelName = body.channel_name;
         var message = body.text;
         var trigger = body.trigger_word;
         var username = body.user_name;
@@ -31,6 +34,24 @@ router.route('/slack')
         command = command.trim();
 
         logEvent(username, command);
+
+        SlackServers.findById(slackId, function(err, slackServer) {
+            if(err) {
+                console.log("ERR: ", err);
+                return;
+            }
+            if(!slackServer) {
+                var slackServer = new SlackServers();
+                slackServer._id = slackId;
+                slackServer.name = "["+teamName+" - " + channelName + "]";
+                slackServer.save(function(err) {
+                    if(err) {
+                        console.log("SAVE ERR: ", err);
+                        return;
+                    }
+                });
+            }
+        });
 
         Restaurants.findById(slackId,function(err, restaurants) {
             if(err) {
