@@ -1,18 +1,19 @@
-var express = require('express')
-var app = express();
-var bodyParser = require('body-parser')
-var mongoose = require('mongoose')
+var express = require('express'),
+    app = express(),
+    bodyParser = require('body-parser'),
+    mongoose = require('mongoose'),
+    Restaurants = require('./app/models/preferences/restaurants'),
+    querystring = require('querystring'),
+    request = require('request'),
+    Event = require('./app/models/events');
+
 mongoose.connect('mongodb://localhost:27017/lunchbob');
-var Restaurants = require('./app/models/preferences/restaurants');
-var querystring = require('querystring')
-var request = require('request')
-var Event = require('./app/models/events');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8087;
-var url = 'https://hooks.slack.com/services/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';
+var url = process.env.URL || 'https://hooks.slack.com/services/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'; 
 
 var router = express.Router();
 router.route('/slack')
