@@ -51,6 +51,9 @@ router.route('/slack')
                     }
                 });
             }
+            if(slackServer && slackServer.url) {
+                url = slackServer.url;
+            }
         });
 
         Restaurants.findById(slackId,function(err, restaurants) {
